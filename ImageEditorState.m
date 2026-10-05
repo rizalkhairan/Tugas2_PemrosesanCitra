@@ -4,7 +4,10 @@ classdef ImageEditorState < handle
     properties (SetAccess = private, SetObservable)
         PreviewImage = []
         PreviewImageFreq = []
+
         HasPreview = false
+        CanUndo = false
+        CanRedo = false
     end
 
     properties (Access = private)
@@ -30,18 +33,14 @@ classdef ImageEditorState < handle
     end
 
     methods
-        function adjustBrightness(obj, value)
-            % Scale DC
+        function imageFreq = getCurrentImageFreq(obj)
             imageFreq = obj.CurrentImageFreq;
-            imageFreq(1, 1, :) = imageFreq(1, 1, :) .* value;
-
-            obj.preview(imageFreq);
         end
 
         function loadImage(obj, image)
-            obj.OriginalImage = image;
+            obj.OriginalImage = im2double(image);
 
-            imageFreq = fft2(image);
+            imageFreq = fft2(obj.OriginalImage);
 
             obj.setImageFreq(imageFreq, false);
             obj.setImageFreq(imageFreq, true);
@@ -69,6 +68,10 @@ classdef ImageEditorState < handle
                 obj.redoStack = {};
             end
 
+            obj.redoStack = {};
+
+            obj.CanUndo = obj.canUndo();
+            obj.CanRedo = obj.canRedo();
             obj.HasPreview = false;
         end
 
@@ -89,6 +92,9 @@ classdef ImageEditorState < handle
 
             obj.setImageFreq(previousFreq, false);
             obj.cancel();
+
+            obj.CanUndo = obj.canUndo();
+            obj.CanRedo = obj.canRedo();
         end
 
         function redo(obj)
@@ -103,6 +109,9 @@ classdef ImageEditorState < handle
 
             obj.setImageFreq(nextFreq, false);
             obj.cancel();
+
+            obj.CanUndo = obj.canUndo();
+            obj.CanRedo = obj.canRedo();
         end
 
         function available = canUndo(obj)
