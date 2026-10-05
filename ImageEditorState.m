@@ -37,6 +37,10 @@ classdef ImageEditorState < handle
             imageFreq = obj.CurrentImageFreq;
         end
 
+        function image = getCurrentImage(obj)
+            image = obj.CurrentImage;
+        end
+
         function loadImage(obj, image)
             obj.OriginalImage = im2double(image);
 
