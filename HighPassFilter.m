@@ -5,7 +5,7 @@ classdef HighPassFilter
             D = FrequencyMeasure.frequencyRadius(F);
 
             % Binary Mask
-            H = D >= cutoff;
+            H = D > cutoff;
 
             Fshift = fftshift(F, 1);
             Fshift = fftshift(Fshift, 2);
@@ -22,7 +22,7 @@ classdef HighPassFilter
 
             % Mask Gaussian
             if cutoff == 0
-                H = D == 0;
+                H = D > 0;
             else
                 H = 1 - exp(-(D.^2) ./ (2 * cutoff^2));
             end
@@ -42,7 +42,7 @@ classdef HighPassFilter
 
             % Mask Butterworth
             if cutoff == 0
-                H = D == 0;
+                H = D > 0;
             else
                 H = 1 ./ (1 + (cutoff ./ D).^(2 * order));
             end

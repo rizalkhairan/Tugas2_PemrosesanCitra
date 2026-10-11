@@ -49,9 +49,11 @@ classdef ImageEditorState < handle
             obj.setImageFreq(imageFreq, false);
             obj.setImageFreq(imageFreq, true);
 
-            obj.HasPreview = false;
             obj.undoStack = {};
             obj.redoStack = {};
+            obj.CanUndo = false;
+            obj.CanRedo = false;
+            obj.HasPreview = false;
         end
 
         function preview(obj, imageFreq)
@@ -71,8 +73,6 @@ classdef ImageEditorState < handle
 
                 obj.redoStack = {};
             end
-
-            obj.redoStack = {};
 
             obj.CanUndo = obj.canUndo();
             obj.CanRedo = obj.canRedo();

@@ -23,23 +23,24 @@ classdef FrequencyMeasure
         end
 
         function [D1, D2] = mirrorPointRadius(F, u, v)
-            % Normalized frequency-distance matrix. 
-            % Distances to two symmetric pair of points with respect to DC
-            % For notch filter calculation
-            %
-            % Calculates distance to each (u, v) and (-u, -v),
-            % then find the min.
+            % u and v use cycles/pixel, matching the spectrum axes (+/-0.5).
+            % Distances use the same corner-normalized scale as frequencyRadius.
 
             height = size(F, 1);
             width  = size(F, 2);
 
-            fx = 2 * (-floor(width/2) : ceil(width/2)-1) / width;
-            fy = 2 * (-floor(height/2) : ceil(height/2)-1) / height;
+            fx = (-floor(width/2) : ceil(width/2)-1) / width;
+            fy = (-floor(height/2) : ceil(height/2)-1) / height;
 
             [FX, FY] = meshgrid(fx, fy);
 
-            D1 = hypot(FX - u, FY - v) ./ sqrt(2);
-            D2 = hypot (FX + u, FY + v) ./ sqrt(2);
+            % Wrap at Nyquist because the DFT frequency grid is periodic.
+            dx1 = mod(FX - u + 0.5, 1) - 0.5;
+            dy1 = mod(FY - v + 0.5, 1) - 0.5;
+            dx2 = mod(FX + u + 0.5, 1) - 0.5;
+            dy2 = mod(FY + v + 0.5, 1) - 0.5;
+            D1 = sqrt(2) * hypot(dx1, dy1);
+            D2 = sqrt(2) * hypot(dx2, dy2);
         end
     end
 end
