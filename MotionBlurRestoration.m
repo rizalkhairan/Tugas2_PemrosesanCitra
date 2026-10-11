@@ -33,6 +33,12 @@ classdef MotionBlurRestoration
             psf = fspecial('motion', motionLength, angle);
 
             imageSize = [size(G, 1), size(G, 2)];
+            if any(size(psf) > imageSize)
+                error('MotionBlurRestoration:PSFTooLarge', ...
+                    ['The motion PSF is %d-by-%d, but the image is %d-by-%d. ' ...
+                    'Reduce the motion length or use a larger image.'], ...
+                    size(psf, 1), size(psf, 2), imageSize(1), imageSize(2));
+            end
             H = psf2otf(psf, imageSize);
         end
 
