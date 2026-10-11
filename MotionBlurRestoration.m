@@ -30,7 +30,8 @@ classdef MotionBlurRestoration
     methods (Static, Access = private)
 
         function H = transferFunction(G, motionLength, angle)
-            psf = fspecial('motion', motionLength, angle);
+            % Test data uses clockwise angles; fspecial uses counterclockwise.
+            psf = fspecial('motion', motionLength, -angle);
 
             imageSize = [size(G, 1), size(G, 2)];
             if any(size(psf) > imageSize)
